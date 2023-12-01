@@ -8,7 +8,7 @@ with sqlite3.connect(databasename) as db:
     cursor= db.cursor()
     cursor.execute("CREATE TABLE IF NOT EXISTS main(tema TEXT,prfl TINYINT,auth INTEGER,foll INTEGER,viewer INTEGER,dec INTEGER, dis INTEGER)")
     cursor.execute("CREATE TABLE IF NOT EXISTS reg(ID INTEGER PRIMARY KEY,tema TEXT,auth BIGINT,foll BIGINT,dec BIGINT,dis TEXT,viewer BIGINT)")
-    cursor.execute("CREATE TABLE IF NOT EXISTS user(uid BIGINT,prfl TINYINT,status BOOL,name TEXT,mess CHAR,cash TINYINT)")
+    cursor.execute("CREATE TABLE IF NOT EXISTS user(uid BIGINT,prfl TINYINT,status BOOL,name TEXT,mess CHAR,cash TINYINT,year TINYINT)")
 def getuser(ID:int):
     db = sqlite3.connect(databasename)
     cursor = db.cursor()
