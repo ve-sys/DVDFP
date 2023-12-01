@@ -16,7 +16,7 @@ class tema:
     def exist(self):
         db = sqlite3.connect(databasename)
         cursor = db.cursor()
-        reg = cursor.execute(f"SELECT tema FROM main WHERE tema = ?", (self.Name,))
+        reg = cursor.execute(f"SELECT tema FROM reg WHERE tema = ?", (self.Name,))
         return bool(len(reg.fetchall()))
     def add(self,show=False,remove=False):
         db = sqlite3.connect(databasename)
@@ -47,8 +47,10 @@ class tema:
                 db.commit()
         else:
             if not (self.exist()):
-                cursor.execute("INSERT INTO main(tema,prfl,auth,foll,viewer,dis,dec) VALUES(?,?,?,?,?,?,?)",
-                               (self.Name, self.prfl, len(self.Author), len(self.follower), len(self.Viewers), len(set(self.Description)),len(set(self.Decisive))))
+                if not bool(len(cursor.execute(f"SELECT tema FROM main WHERE tema = ?", (self.Name,)).fetchall())):
+                    cursor.execute("INSERT INTO main(tema,prfl,auth,foll,viewer,dis,dec) VALUES(?,?,?,?,?,?,?)",(self.Name, self.prfl, len(self.Author), len(self.follower), len(self.Viewers), len(set(self.Description)),len(set(self.Decisive))))
+                else:
+                    cursor.execute("UPDATE main SET auth = ?,foll = ?,viewer = ?,dis = ?,dec = ? WHERE tema = ?", (len(self.Author), len(self.follower), len(self.Viewers),len(set(self.Description)), len(set(self.Decisive)),self.Name))
                 mx = max([len(set(self.Author)), len(set(self.Decisive)), len(set(self.follower)),
                           len(set(self.Description)), len(set(self.Viewers))])
                 ADD = np.array([

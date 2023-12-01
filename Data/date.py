@@ -1,1 +1,1 @@
-databasename="C:\\Users\\johnH\\PycharmProjects\\CROC_BLT\\Data\\Data.db"
+databasename="Data.db"

@@ -260,9 +260,10 @@ async def cmd_start(message: Message):
         tem = choice(GT)[0]#<<<<!!!!
         print(f'ТЕМА:{tem}')#<<<<
         us = (int((str((Commands.gettema(tem)).Author)).replace("[", "").replace("]", "").replace("'", "")))
+        print(us)
         descr = ((str((Commands.gettema(tem)).Description)).replace("[", "").replace("]", "").replace("'", ""))
-        print(f'us:{us},tema:{tem},descr:{descr}')#<<<<
         us = Commands.getuser(us).name
+        print(f'us:{us},tema:{tem},descr:{descr}')#<<<<
         builder = InlineKeyboardBuilder()
         builder.add(InlineKeyboardButton(
             text="Избранное",

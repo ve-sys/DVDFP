@@ -21,11 +21,14 @@ def gettema(Name:str):
     Out=tema(Name)
     Out.prfl=cursor.execute(f"SELECT prfl FROM main WHERE tema = ?", (Name,)).fetchone()[0]
     ratio = np.array(cursor.execute("SELECT auth,foll,dec,dis,viewer FROM reg WHERE tema = ?", (Name,)).fetchall()).transpose()
-    Out.Author = list(filter(lambda x :(x!=None), ratio[0]))
-    Out.follower = list(filter(lambda x :(x!=None), ratio[1]))
-    Out.Decisive = list(filter(lambda x: (x != None), ratio[2]))
-    Out.Description = list(filter(lambda x: (x != None), ratio[3]))
-    Out.Viewers = list(filter(lambda x: (x != None), ratio[4]))
+    if ratio!=None:
+        Out.Author = list(filter(lambda x :(x!=None), ratio[0]))
+        Out.follower = list(filter(lambda x :(x!=None), ratio[1]))
+        Out.Decisive = list(filter(lambda x: (x != None), ratio[2]))
+        Out.Description = list(filter(lambda x: (x != None), ratio[3]))
+        Out.Viewers = list(filter(lambda x: (x != None), ratio[4]))
+    else:
+        Out.Author=Out.follower=Out.Decisive=Out.Description=Out.Viewers=[]
     return Out
 def gettemes(ID:int):
     user=getuser(ID)
