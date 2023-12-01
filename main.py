@@ -336,7 +336,7 @@ async def echo(message: Message):
                 temm = temm+i
             if flg ==1:
                 descr = descr+i
-        (Tema.tema(temm,prfl=pr,Description=[descr[2:]],Author=[id])).add(show=True)#<<<<
+        (Tema.tema(temm,prfl=pr,Description=[descr[1:]],Author=[id])).add(show=True)#<<<<
         print(pr)
         await message.answer('Тема записана!')
         id = int(uid(message.from_user))
