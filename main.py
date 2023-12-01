@@ -425,6 +425,9 @@ async def echo(message: Message):
         except:
             await message.answer('Такой темы нет, \nпроверьте правильность написания темы\n(Проверьте, что тема написана без кавычек, знаков препинаний и лишних пробелов) ')
     if status == 6:
+        id = int(uid(message.from_user))
+        pr = (Commands.getuser(id)).prfl
+        us = (Commands.getuser(id)).name
         if message.text == 'CrCEJP_18A31ek7d1fsIv748r329HJsfe_TA':
             builder = ReplyKeyboardBuilder()
             builder.row(
