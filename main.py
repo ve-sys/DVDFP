@@ -246,25 +246,29 @@ async def without_puree(message: Message):
 @dp.message((F.text.lower() == "тeмa"))
 async def cmd_start(message: Message):
     id = int(uid(message.from_user))
-    print(Commands.gettemes(id))
-    tem = choice((Commands.gettemes(id)))[0]#<<<<!!!!
-    print(f'ТЕМА:{tem}')#<<<<
-    us = (int((str((Commands.gettema(tem)).Author)).replace("[", "").replace("]", "").replace("'", "")))
-    descr = ((str((Commands.gettema(tem)).Description)).replace("[", "").replace("]", "").replace("'", ""))
-    print(f'us:{us},tema:{tem},descr:{descr}')#<<<<
-    us = Commands.getuser(us).name
-    builder = InlineKeyboardBuilder()
-    builder.add(InlineKeyboardButton(
-        text="Избранное",
-        callback_data="fav"))
-    builder.add(InlineKeyboardButton(
-        text="Буду решать",
-        callback_data="dec"))
-    await message.answer(
-        f'"{tem}" Автор - @{us}\n Описание: {descr}',
-        reply_markup=builder.as_markup()
-    )
-    Tema.tema(tem,Viewers=[id]).add()
+    GT = Commands.gettemes(id)
+    if len(GT) > 0:
+        print(Commands.gettemes(id))
+        tem = choice(GT)[0]#<<<<!!!!
+        print(f'ТЕМА:{tem}')#<<<<
+        us = (int((str((Commands.gettema(tem)).Author)).replace("[", "").replace("]", "").replace("'", "")))
+        descr = ((str((Commands.gettema(tem)).Description)).replace("[", "").replace("]", "").replace("'", ""))
+        print(f'us:{us},tema:{tem},descr:{descr}')#<<<<
+        us = Commands.getuser(us).name
+        builder = InlineKeyboardBuilder()
+        builder.add(InlineKeyboardButton(
+            text="Избранное",
+            callback_data="fav"))
+        builder.add(InlineKeyboardButton(
+            text="Буду решать",
+            callback_data="dec"))
+        await message.answer(
+            f'"{tem}" Автор - @{us}\n Описание: {descr}',
+            reply_markup=builder.as_markup()
+        )
+        Tema.tema(tem,Viewers=[id]).add()
+    else:
+        await message.answer("Темы не найдено")
 
 
 
