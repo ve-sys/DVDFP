@@ -80,7 +80,7 @@ async def cmd_special_buttons(message: Message):
 
 
 #Выбор профиля
-@dp.message((F.text.lower() == "физмат"))
+@dp.message((F.text.lower()=="физмат"))
 async def cmd_start(message: Message):
     id = int(uid(message.from_user))
     us = (Commands.getuser(id)).name

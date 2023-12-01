@@ -4,13 +4,13 @@ import Data.date as dd
 databasename=dd.databasename
 class tema:
     def __init__(self,Name:str,Author=[],prfl=0,Decisive=[],follower=[],Description=[],Viewers=[]):
-        self.Name=Name
-        self.Author=Author
-        self.prfl=prfl
-        self.follower=follower
-        self.Decisive=Decisive
-        self.Description=Description
-        self.Viewers=Viewers
+        self.Name =Name
+        self.Author =Author
+        self.prfl =prfl
+        self.follower =follower
+        self.Decisive =Decisive
+        self.Description =Description
+        self.Viewers =Viewers
     def __str__(self) -> str:
         return f"<Name:{self.Name};ProfilID:{self.prfl};Author:{self.Author};Decisive:{self.Decisive};follower:'{self.follower}';Description:'{self.Description}';Viewers:'{self.Viewers}'>"
     def exist(self):
