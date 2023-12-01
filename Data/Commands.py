@@ -21,7 +21,7 @@ def gettema(Name:str):
     Out=tema(Name)
     Out.prfl=cursor.execute(f"SELECT prfl FROM main WHERE tema = ?", (Name,)).fetchone()[0]
     ratio = np.array(cursor.execute("SELECT auth,foll,dec,dis,viewer FROM reg WHERE tema = ?", (Name,)).fetchall()).transpose()
-    if ratio!=None:
+    if len(ratio)>0:
         Out.Author= list(filter(lambda x :(x!=None), ratio[0]))
         Out.follower= list(filter(lambda x :(x!=None), ratio[1]))
         Out.Decisive= list(filter(lambda x: (x != None), ratio[2]))
