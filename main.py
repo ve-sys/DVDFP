@@ -140,6 +140,7 @@ async def cmd_special_buttons(message: Message):
         )
         builder.row(
             KeyboardButton(text="Удалить из избранного"),
+            KeyboardButton(text="Больше не решаю")
         )
         builder.row(
             KeyboardButton(text="Мои темы"),
@@ -208,7 +209,14 @@ async def without_puree(message: Message):
     us = (Commands.getuser(id)).name
     Users.User(id, prfl=pr, name=us, cash=3).add(Show=True)
     print(Commands.getuser(id).name)
-
+@dp.message(F.text.lower() == "больше не решаю")
+async def without_puree(message: Message):
+    await message.reply("Напишите название темы, которую вы больше не решаете")
+    id = int(uid(message.from_user))
+    pr = (Commands.getuser(id)).prfl
+    us = (Commands.getuser(id)).name
+    Users.User(id, prfl=pr, name=us, cash=5).add(Show=True)
+    print(Commands.getuser(id).name)
 
 @dp.message(F.text.lower() == "мои темы")
 async def without_puree(message: Message):
@@ -404,6 +412,18 @@ async def echo(message: Message):
             print(Commands.getuser(id).name)
         except:
             await message.answer('Такой темы нет, \nпроверьте правильность написания темы\n(Проверьте, что тема написана без кавычек, знаков препинаний и лишних пробелов) ')
+    if status == 5:
+        try:
+            (Tema.tema(message.text,Description=[""], Decisive=[id])).add(show=True,remove = True)#<<<<
+            id = int(uid(message.from_user))
+            pr = (Commands.getuser(id)).prfl
+            us = (Commands.getuser(id)).name
+            Users.User(id, prfl=pr, name=us, cash=0).add(Show=True)
+            await message.answer('Вы удалены из состава решающих тем!')
+            print(str((Commands.getUserTemes(id))))#<<<< (little trolling)
+            print(Commands.getuser(id).name)
+        except:
+            await message.answer('Такой темы нет, \nпроверьте правильность написания темы\n(Проверьте, что тема написана без кавычек, знаков препинаний и лишних пробелов) ')
     if status == 6:
         if message.text == 'CrCEJP_18A31ek7d1fsIv748r329HJsfe_TA':
             builder = ReplyKeyboardBuilder()
@@ -424,8 +444,10 @@ async def echo(message: Message):
                 "Выберите действие:",
                 reply_markup=builder.as_markup(resize_keyboard=True),
             )
+            Users.User(id, prfl=pr, name=us, cash=0).add(Show=True)
         else:
             await message.answer('Неправильный пароль!')
+            Users.User(id, prfl=pr, name=us, cash=0).add(Show=True)
     if status == 0:
         await message.answer('Такой команды нет, проверьте правильность написания')
 
