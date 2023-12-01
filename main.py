@@ -11,7 +11,7 @@ from aiogram.types import*
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from random import *
-token="6984341805:AAFGae8Bu3Z6CGhCmdnxwf5zba-eYGRhbgc"
+token=""
 print(f'Bot is set and ready | {token}')
 bot = Bot(token)
 dp = Dispatcher()
