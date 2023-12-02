@@ -38,11 +38,13 @@ class tema:
                     Coulm = i[1]
                     Y = int(cursor.execute(f"SELECT {Coulm} FROM main WHERE tema = ?", (self.Name,)).fetchone()[0])-len(a)
                     cursor.execute(f"UPDATE main SET {Coulm} = ? WHERE tema = ?", (Y, self.Name))
+                    db.commit()
                     if show: print(a, Coulm, cursor.execute(f"SELECT * FROM main WHERE tema = ?", (self.Name,)).fetchone())
                     for x in a:
                         Ncoulm = list(set([Coulm]) ^ set(coulm))
                         cursor.execute(f"UPDATE reg SET {Coulm} = NULL WHERE tema = ? AND {Coulm} = ?",(self.Name,x))
                         if show: print(Ncoulm, x)
+                        db.commit()
                 cursor.execute(f"DELETE FROM reg WHERE tema = ? AND ({coulm[0]} IS NULL) AND ({coulm[1]} IS NULL) AND ({coulm[2]} IS NULL) AND ({coulm[3]} IS NULL) AND ({coulm[4]} IS NULL)", (self.Name,))
                 db.commit()
         else:
