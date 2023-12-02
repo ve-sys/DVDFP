@@ -283,7 +283,7 @@ async def cmd_start(message: Message):
             reply_markup=builder.as_markup()
         )
         print(f'"{tem}" Автор - @{us}\n Описание: {descr}')
-        Tema.tema(tem,Viewers=[id]).add()
+        (Tema.tema(tem,Viewers=[id])).add()
     else:
         print(f'user:{us}|пользователь запросил тему из базы')
         print(f'user:{us}|профиль:{pr}|новых тем нет')

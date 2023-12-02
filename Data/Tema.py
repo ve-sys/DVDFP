@@ -68,6 +68,9 @@ class tema:
                 db.commit()
             else:
                 iN = [self.Author, self.follower, self.Decisive, self.Description, self.Viewers]
+                Y = int(cursor.execute(f"SELECT viewer FROM main WHERE tema = ?", (self.Name,)).fetchone()[0]) + len(self.Viewers)
+                cursor.execute(f"UPDATE main SET viewer = ? WHERE tema = ?", (Y, self.Name))
+                db.commit()
                 lastdata = np.array(
                     cursor.execute("SELECT auth,foll,dec,dis,viewer FROM reg WHERE tema = ?", (self.Name,)).fetchall())
                 ratio = lastdata.transpose()
@@ -80,6 +83,7 @@ class tema:
                     Coulm = i[1]
                     Y=int(cursor.execute(f"SELECT {Coulm} FROM main WHERE tema = ?", (self.Name,)).fetchone()[0])+len(a)
                     cursor.execute(f"UPDATE main SET {Coulm} = ? WHERE tema = ?", (Y, self.Name))
+                    db.commit()
                     if show: print(a, Coulm,cursor.execute(f"SELECT * FROM main WHERE tema = ?", (self.Name,)).fetchone())
                     for x in a:
                         if len(cursor.execute(f"SELECT * FROM reg WHERE tema = ? AND {Coulm} IS NULL",
@@ -87,8 +91,9 @@ class tema:
                             minID = min(cursor.execute(f"SELECT ID FROM reg WHERE tema = ? AND {Coulm} IS NULL",
                                                        (self.Name,)).fetchall(), key=lambda x: (x[0]))[0]
                             cursor.execute(f"UPDATE reg SET {Coulm} = ? WHERE ID = ? AND {Coulm} IS NULL", (x, minID))
+                            db.commit()
                         else:
                             cursor.execute(f"INSERT INTO reg(tema,{Coulm}) VALUES (?,?)", (self.Name, x))
-                    db.commit()
+                            db.commit()
         cursor.close()
         db.close()
