@@ -384,7 +384,10 @@ async def echo(message: Message):
             id = int(uid(message.from_user))
             pr = (Commands.getuser(id)).prfl
             us = (Commands.getuser(id)).name
-            us2 = (Commands.getuser((Commands.gettema(message.text)).Author[0])).name
+            if len((Commands.gettema(message.text)).Author)>0:
+                us2 = "@"+(Commands.getuser((Commands.gettema(message.text)).Author[0])).name
+            else:
+                us2="--"
             print(Commands.gettema(message.text))
             Users.User(id, prfl=pr, name=us, cash=0).add(Show=True)
             prf = int((Commands.gettema(message.text)).prfl)
@@ -394,7 +397,7 @@ async def echo(message: Message):
                 p = 'Биохим'
             if prf == 3:
                 p = 'Соцэконом'
-            mess = f'Автор: @{us2} \nПрофиль: {p} \n'
+            mess = f'Автор: {us2} \nПрофиль: {p} \n'
             mess += f'Описание: {str((Commands.gettema(message.text)).Description).replace("[","").replace("]","")} \n'
             if us == us2:
                 mess += f'Подписчики: {len(list((Commands.gettema(message.text)).follower))} \n'
