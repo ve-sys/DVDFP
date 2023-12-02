@@ -31,7 +31,7 @@ def gettema(Name:str):
         Out.Author=Out.follower=Out.Decisive=Out.Description=Out.Viewers=[]
     return Out
 def gettemes(ID:int):
-    user=getuser(ID)
+    user= getuser(ID)
     View=cursor.execute("""
     SELECT MIN(viewer) FROM main 
     WHERE prfl = ?
