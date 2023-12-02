@@ -32,7 +32,6 @@ def gettema(Name:str):
     return Out
 def gettemes(ID:int):
     user=getuser(ID)
-    print(user.prfl)
     View=cursor.execute("""
     SELECT MIN(viewer) FROM main 
     WHERE prfl = ?
@@ -49,6 +48,7 @@ def gettemes(ID:int):
     SELECT tema,prfl FROM main WHERE
     prfl = ?  AND viewer = ? AND auth = ? AND dec = ?
     """, (user.prfl,View,Auth,Dec)).fetchall()
+    print(View, Auth, Dec)
     return temes
 def getUserTemes(ID):
     Author=cursor.execute("""
