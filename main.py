@@ -90,7 +90,7 @@ async def cmd_start(message: Message):
     builder.row(
         KeyboardButton(text="Задаю"),
     )
-        builder.row(
+    builder.row(
         KeyboardButton(
             text="Назад"),
     )
