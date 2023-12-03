@@ -83,7 +83,7 @@ async def cmd_start(message: Message):
     id = int(uid(message.from_user))
     us = (Commands.getuser(id)).name
     Users.User(id, prfl=1,name=us).add()
-    builder = ReplyKeyboardBuilder()
+    builder =ReplyKeyboardBuilder()
     builder.row(
         KeyboardButton(text="Ищу"),
     )
