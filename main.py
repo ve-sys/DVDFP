@@ -90,6 +90,10 @@ async def cmd_start(message: Message):
     builder.row(
         KeyboardButton(text="Задаю"),
     )
+        builder.row(
+        KeyboardButton(
+            text="Назад"),
+    )
     await message.answer('Вы - физмат\nВыберете, задаете вы тему или ищите',reply_markup=builder.as_markup(resize_keyboard=True))
     print(f'user:{us}|пользователь выбрал профиль "физмат"')
 @dp.message((F.text.lower() == "биохим"))
@@ -103,6 +107,10 @@ async def cmd_special_buttons(message: Message):
     )
     builder.row(
         KeyboardButton(text="Задаю"),
+    )
+    builder.row(
+        KeyboardButton(
+            text="Назад"),
     )
     await message.answer('Вы - биохим\nВыберете, задаете вы тему или ищите',reply_markup=builder.as_markup(resize_keyboard=True))
     print(f'user:{us}|пользователь выбрал профиль "биохим"')
