@@ -83,7 +83,7 @@ async def cmd_start(message: Message):
     id = int(uid(message.from_user))
     us = (Commands.getuser(id)).name
     Users.User(id, prfl=1,name=us).add()
-    builder =ReplyKeyboardBuilder()
+    builder = ReplyKeyboardBuilder()
     builder.row(
         KeyboardButton(text="Ищу"),
     )
@@ -91,8 +91,8 @@ async def cmd_start(message: Message):
         KeyboardButton(text="Задаю"),
     )
     builder.row(
-        KeyboardButton(
-            text="Назад"),
+        KeyboardButton(text="Назад"),
+        KeyboardButton(text="Справка")
     )
     await message.answer('Вы - физмат\nВыберете, задаете вы тему или ищите',reply_markup=builder.as_markup(resize_keyboard=True))
     print(f'user:{us}|пользователь выбрал профиль "физмат"')
@@ -109,8 +109,8 @@ async def cmd_special_buttons(message: Message):
         KeyboardButton(text="Задаю"),
     )
     builder.row(
-        KeyboardButton(
-            text="Назад"),
+        KeyboardButton(text="Назад"),
+        KeyboardButton(text="Справка")
     )
     await message.answer('Вы - биохим\nВыберете, задаете вы тему или ищите',reply_markup=builder.as_markup(resize_keyboard=True))
     print(f'user:{us}|пользователь выбрал профиль "биохим"')
@@ -125,6 +125,10 @@ async def cmd_special_buttons(message: Message):
     )
     builder.row(
         KeyboardButton(text="Задаю"),
+    )
+    builder.row(
+        KeyboardButton(text="Назад"),
+        KeyboardButton(text="Справка")
     )
     await message.answer('Вы - соцэконом\nВыберете, задаете вы тему или ищите',reply_markup=builder.as_markup(resize_keyboard=True))
     print(f'user:{us}|пользователь выбрал профиль "соцэконом"')
@@ -158,10 +162,11 @@ async def cmd_special_buttons(message: Message):
         KeyboardButton(text="Информация по теме")
     )
     builder.row(
-        KeyboardButton(
-            text="Назад"),
+        KeyboardButton(text="Назад")
     )
-
+    builder.row(
+        KeyboardButton(text="Справка")
+    )
     await message.answer(
         "Выберите действие:",
         reply_markup=builder.as_markup(resize_keyboard=True),
@@ -178,14 +183,21 @@ async def with_puree(message: Message):
     mess1 = '''Приветствую. Вы вызвали справку по работе бота!
 
 Для тех, кто ищет тему:
+- тема - команда выдает новую тему.
+    - избранное - команда добавляет тему в избранное;
+    - буду решать - команда добавляет вас в список тех, кто работает над решением к теме;
+- удалить из избранного - команда удаляет тему из избранного; 
+- больше не решаю - команда удаляет вас из списка тех, кто работает над решением к теме
 - мои темы - команда выдает список написанных вами тем, тем, добавленных в избранное и тем, которые вы решаете;
-- удалить - команда удаляет тему из избранного; 
 - информация по теме- команда позволяет узнать точные данные о теме;
+- назад - команда возвращает к меню выбора профиля;
+
 Для тех, кто предлагает тему:
 - предложить - команда позволяет записать тему в базу тем;
 - удалить - команда удаляет ваше авторство из темы;
 - мои темы - команда выдает список написанных вами тем  тем, добавленных в избранное и тем, которые вы решаете;
 - информация по теме - команда позволяет узнать точные данные о теме;
+- назад - команда возвращает к меню выбора профиля;
 
 dumai_vanya_dumai@mail.ru - почта для обратной связи'''
     await message.reply("Справка по работе бота:\n"+mess1)
@@ -291,7 +303,7 @@ async def cmd_start(message: Message):
             reply_markup=builder.as_markup()
         )
         print(f'"{tem}" Автор - @{us}\n Описание: {descr}')
-        (Tema.tema(tem,Viewers=[id])).add()
+        Tema.tema(tem,Viewers=[id]).add()
     else:
         print(f'user:{us}|пользователь запросил тему из базы')
         print(f'user:{us}|профиль:{pr}|новых тем нет')
@@ -360,6 +372,7 @@ async def echo(message: Message):
                 temm = temm+i
             if flg ==1:
                 descr = descr+i
+        temm = temm.replace('"','')
         (Tema.tema(temm,prfl=pr,Description=[descr[1:]],Author=[id])).add(show=True)#<<<<
         await message.answer('Тема записана!')
         id = int(uid(message.from_user))
@@ -392,10 +405,7 @@ async def echo(message: Message):
             id = int(uid(message.from_user))
             pr = (Commands.getuser(id)).prfl
             us = (Commands.getuser(id)).name
-            if len((Commands.gettema(message.text)).Author)>0:
-                us2 = "@"+(Commands.getuser((Commands.gettema(message.text)).Author[0])).name
-            else:
-                us2="--"
+            us2 = (Commands.getuser((Commands.gettema(message.text)).Author[0])).name
             print(Commands.gettema(message.text))
             Users.User(id, prfl=pr, name=us, cash=0).add(Show=True)
             prf = int((Commands.gettema(message.text)).prfl)
@@ -405,7 +415,7 @@ async def echo(message: Message):
                 p = 'Биохим'
             if prf == 3:
                 p = 'Соцэконом'
-            mess = f'Автор: {us2} \nПрофиль: {p} \n'
+            mess = f'Автор: @{us2} \nПрофиль: {p} \n'
             mess += f'Описание: {str((Commands.gettema(message.text)).Description).replace("[","").replace("]","")} \n'
             if us == us2:
                 mess += f'Подписчики: {len(list((Commands.gettema(message.text)).follower))} \n'
@@ -478,10 +488,11 @@ async def echo(message: Message):
                 KeyboardButton(text="Информация по теме")
             )
             builder.row(
-                KeyboardButton(
-                    text="Назад"),
+                KeyboardButton(text="Назад")
             )
-
+            builder.row(
+                KeyboardButton(text="Справка")
+            )
             await message.answer(
                 "Выберите действие:",
                 reply_markup=builder.as_markup(resize_keyboard=True),
@@ -494,7 +505,6 @@ async def echo(message: Message):
             print(f'user:{us}|введен неверный пароль')
     if status == 0:
         await message.answer('Такой команды нет, проверьте правильность написания')
-
 
 #
 #
