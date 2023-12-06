@@ -57,9 +57,35 @@ async def cmd_special_buttons(message: Message):
     builder.row(
         KeyboardButton(text="Соцэконом"),
     )
-    await message.answer('Здравствуйте, чат-бот сейчас еще может содержать ошибки\nЕсли вы столкнулись с ошибкой, напишите о ней на почту\ndumai_vanya_dumai@mail.ru\nСпасибо за понимание\n~Команда "Думай, Ваня, Думай"')
+    builder2 = InlineKeyboardBuilder()
+    builder2.add(InlineKeyboardButton(
+        text="О создателях",
+        callback_data="cre"))
+    await message.answer('Здравствуйте, чат-бот сейчас еще может содержать ошибки\nЕсли вы столкнулись с ошибкой, напишите о ней на почту\ndumai_vanya_dumai@mail.ru\nСпасибо за понимание\n~Команда "Думай, Ваня, Думай"',reply_markup=builder2.as_markup())
     await message.answer('Это бот, созданный командой \n"Думай, Ваня, думай"\nВыберите ваш учебный профиль', reply_markup=builder.as_markup(resize_keyboard=True))
     print(f'user:{uun(message.from_user)}|инициация бота')
+@dp.callback_query(F.data == "cre")
+async def send_random_value(callback: CallbackQuery):
+    mess ='''Кто это сделал и почему "Ежупа"?
+
+Этот бот создан командой "Думай, Ваня, думай" в процессе прохождения "Школы IT решений" (ШИР) от Brainz by CROC. 
+"Ежупа" - это CROC-овский локальный прикол. Если будете часом у них на "ШИР"е - спросите.
+А краб на аватарке - уже наш прикол и отсылка к тестовой теме 
+
+Что такое Brainz by CROC? https://brainz.croc.ru
+
+Наша команда:
+Иван Торопов - Капитан команды, дополнительный программист
+Иван Воронцов - UI программист
+Антон Акопов - Админ базы данных, backend программист
+Самира Ахметбаева - Аналитик, дизайнер, документатор
+(А так же команда прекрасных анонимных модеров)
+И при активном участии менеджеров и эксперта команды.
+
+<3
+'''
+
+    await callback.message.answer(mess)
 
 @dp.message((F.text.lower() == "назад"))
 async def cmd_special_buttons(message: Message):
