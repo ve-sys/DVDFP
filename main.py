@@ -60,6 +60,7 @@ async def cmd_special_buttons(message: Message):
     await message.answer('Здравствуйте, чат-бот сейчас еще может содержать ошибки\nЕсли вы столкнулись с ошибкой, напишите о ней на почту\ndumai_vanya_dumai@mail.ru\nСпасибо за понимание\n~Команда "Думай, Ваня, Думай"')
     await message.answer('Это бот, созданный командой \n"Думай, Ваня, думай"\nВыберите ваш учебный профиль', reply_markup=builder.as_markup(resize_keyboard=True))
     print(f'user:{uun(message.from_user)}|инициация бота')
+
 @dp.message((F.text.lower() == "назад"))
 async def cmd_special_buttons(message: Message):
     User = Users.User(int(uid(message.from_user)), 0, str(uun(message.from_user)), False, "tg", 0)
@@ -91,8 +92,8 @@ async def cmd_start(message: Message):
         KeyboardButton(text="Задаю"),
     )
     builder.row(
-        KeyboardButton(
-            text="Назад"),
+        KeyboardButton(text="Назад"),
+        KeyboardButton(text="Справка"),
     )
     await message.answer('Вы - физмат\nВыберете, задаете вы тему или ищите',reply_markup=builder.as_markup(resize_keyboard=True))
     print(f'user:{us}|пользователь выбрал профиль "физмат"')
@@ -109,8 +110,8 @@ async def cmd_special_buttons(message: Message):
         KeyboardButton(text="Задаю"),
     )
     builder.row(
-        KeyboardButton(
-            text="Назад"),
+        KeyboardButton(text="Назад"),
+        KeyboardButton(text="Справка"),
     )
     await message.answer('Вы - биохим\nВыберете, задаете вы тему или ищите',reply_markup=builder.as_markup(resize_keyboard=True))
     print(f'user:{us}|пользователь выбрал профиль "биохим"')
@@ -125,6 +126,10 @@ async def cmd_special_buttons(message: Message):
     )
     builder.row(
         KeyboardButton(text="Задаю"),
+    )
+    builder.row(
+        KeyboardButton(text="Назад"),
+        KeyboardButton(text="Справка"),
     )
     await message.answer('Вы - соцэконом\nВыберете, задаете вы тему или ищите',reply_markup=builder.as_markup(resize_keyboard=True))
     print(f'user:{us}|пользователь выбрал профиль "соцэконом"')
@@ -158,10 +163,11 @@ async def cmd_special_buttons(message: Message):
         KeyboardButton(text="Информация по теме")
     )
     builder.row(
-        KeyboardButton(
-            text="Назад"),
+        KeyboardButton(text="Назад"),
     )
-
+    builder.row(
+        KeyboardButton(text="Справка"),
+    )
     await message.answer(
         "Выберите действие:",
         reply_markup=builder.as_markup(resize_keyboard=True),
@@ -238,29 +244,28 @@ async def without_puree(message: Message):
     id = int(uid(message.from_user))
     pr = (Commands.getuser(id)).prfl
     us = (Commands.getuser(id)).name
-    mess = 'Список ваших тем\n\nДобавленное вами:'
-    F = str((Commands.getUserTemes(id))).replace("'",'').replace('[','').replace(']','').replace(',','').replace('(','-').replace(')','')
-    for x in F:
-        if x != '-':
-            mess = mess+x
-        else:
-            mess = mess+'\n-'
-    mess += '\n\nВ избранном:'
-    F = str((Commands.getUserFavs(id))).replace("'", '').replace('[', '').replace(']', '').replace(',', '').replace(
-        '(', '-').replace(')', '')
-    for x in F:
-        if x != '-':
-            mess = mess + x
-        else:
-            mess = mess + '\n-'
-    mess += '\n\nЯ решаю:'
-    F = str((Commands.getUserDec(id))).replace("'", '').replace('[', '').replace(']', '').replace(',', '').replace(
-        '(', '-').replace(')', '')
-    for x in F:
-        if x != '-':
-            mess = mess + x
-        else:
-            mess = mess + '\n-'
+    mess = 'Список ваших тем\nДобавленное вами:'
+    F = Commands.getUserTemes(id)[0]
+    if len(F) > 0:
+        for x in F:
+            mess = mess + f"\n- {x[0]}"
+    else:
+        mess += "\n-"
+    mess += '\nВ избранном:'
+    F = Commands.getUserFavs(id)[0]
+    if len(F) > 0:
+        for x in F:
+            mess = mess + f"\n- {x[0]}"
+    else:
+        mess += "\n-"
+    mess += '\nЯ решаю:'
+    F = Commands.getUserDec(id)[0]
+    if len(F) > 0:
+        for x in F:
+            mess = mess + f"\n- {x[0]}"
+    else:
+        mess += "\n-"
+    await message.reply(mess)
     await message.reply(mess)
     print(f'user:{us}||пользователь запросил "мои темы"')
 
@@ -316,8 +321,7 @@ async def send_random_value(callback: CallbackQuery):
     print(f'user:{us}|тема:<{rtem}>|пользователь добавил тему в избранное')
     await callback.answer(
         text="Тема сохранена",
-        show_alert=True
-    )
+        show_alert=True)
 @dp.callback_query(F.data == "dec")
 async def send_random_value(callback: CallbackQuery):
     user = callback.from_user.id
@@ -341,8 +345,6 @@ async def send_random_value(callback: CallbackQuery):
         show_alert=True
     )
 
-
-
 @dp.message()
 async def echo(message: Message):
     id = int(uid(message.from_user))
@@ -360,6 +362,7 @@ async def echo(message: Message):
                 temm = temm+i
             if flg ==1:
                 descr = descr+i
+        temm = temm.replace('"','')
         (Tema.tema(temm,prfl=pr,Description=[descr[1:]],Author=[id])).add(show=True)#<<<<
         await message.answer('Тема записана!')
         id = int(uid(message.from_user))
@@ -478,10 +481,9 @@ async def echo(message: Message):
                 KeyboardButton(text="Информация по теме")
             )
             builder.row(
-                KeyboardButton(
-                    text="Назад"),
+                KeyboardButton(text="Назад"),
+                KeyboardButton(text="Справка"),
             )
-
             await message.answer(
                 "Выберите действие:",
                 reply_markup=builder.as_markup(resize_keyboard=True),
