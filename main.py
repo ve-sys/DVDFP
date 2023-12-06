@@ -245,21 +245,21 @@ async def without_puree(message: Message):
     pr = (Commands.getuser(id)).prfl
     us = (Commands.getuser(id)).name
     mess = 'Список ваших тем\nДобавленное вами:'
-    F = Commands.getUserTemes(id)[0][1:]
+    F = Commands.getUserTemes(id)[0][:-1]
     if len(F) > 0:
         for x in F:
             mess = mess + f"\n- {x[0]}"
     else:
         mess += "\n-"
     mess += '\nВ избранном:'
-    F = Commands.getUserFavs(id)[0][1:]
+    F = Commands.getUserFavs(id)[0][:-1]
     if len(F) > 0:
         for x in F:
             mess = mess + f"\n- {x[0]}"
     else:
         mess += "\n-"
     mess += '\nЯ решаю:'
-    F = Commands.getUserDec(id)[0][1:]
+    F = Commands.getUserDec(id)[0][:-1]
     if len(F) > 0:
         for x in F:
             mess = mess + f"\n- {x[0]}"
