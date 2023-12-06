@@ -266,7 +266,6 @@ async def without_puree(message: Message):
     else:
         mess += "\n-"
     await message.reply(mess)
-    await message.reply(mess)
     print(f'user:{us}||пользователь запросил "мои темы"')
 
 @dp.message((F.text.lower() == "тeмa"))
