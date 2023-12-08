@@ -300,7 +300,7 @@ async def cmd_start(message: Message):
     us = (Commands.getuser(id)).name
     pr = (Commands.getuser(id)).prfl
     GT = list(Commands.gettemes(id))
-    if len(GT) > 0:
+    if len(GT)>0:
         tem = choice(GT)
         descr = ((str((Commands.gettema(tem)).Description)).replace("[", "").replace("]", "").replace("'", ""))
         if (Commands.gettema(tem)).Author != []:

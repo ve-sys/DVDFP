@@ -32,7 +32,7 @@ def gettema(Name:str):
     return Out
 def gettemes(ID:int):
     user=getuser(ID)
-    usrViewers= {x[0] for x in getUserView(ID)}
+    usrViewers={x[0] for x in getUserView(ID)}
     if len(usrViewers)>0:
         SuV=str(usrViewers).replace("{","(").replace("}",")")
         View = cursor.execute(f"""
