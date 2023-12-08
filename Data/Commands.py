@@ -32,10 +32,15 @@ def gettema(Name:str):
     return Out
 def gettemes(ID:int):
     user=getuser(ID)
-    View=cursor.execute("""
-    SELECT MIN(viewer) FROM main 
-    WHERE prfl = ?
-    """, (user.prfl,)).fetchone()[0]
+    usrViewers= {x[0] for x in getUserView(ID)}
+    if len(usrViewers)>0:
+        SuV=str(usrViewers).replace("{","(").replace("}",")")
+        View = cursor.execute(f"""
+            SELECT MIN(viewer) FROM main WHERE prfl = ? AND NOT (tema IN {SuV})
+            """, (user.prfl,)).fetchone()[0]
+        print("View", SuV)
+    else:
+        View = cursor.execute("""SELECT MIN(viewer) FROM main WHERE prfl = ?""", (user.prfl,)).fetchone()[0]
     Auth=cursor.execute("""
     SELECT MAX(auth) FROM main WHERE 
     prfl = ?  AND viewer = ?
@@ -44,12 +49,15 @@ def gettemes(ID:int):
     SELECT MIN(dec) FROM main WHERE 
     prfl = ?  AND viewer = ? AND auth = ?
     """, (user.prfl,View,Auth)).fetchone()[0]
-    temes=cursor.execute("""
+    temes={x[0] for x in cursor.execute("""
     SELECT tema,prfl FROM main WHERE
     prfl = ?  AND viewer = ? AND auth = ? AND dec = ?
-    """, (user.prfl,View,Auth,Dec)).fetchall()
-    print(View, Auth, Dec, user.name)
-    return temes
+    """, (user.prfl,View,Auth,Dec)).fetchall()}
+    print("NView",temes,DEBUG("tw"))
+    if len(temes-usrViewers)==0:
+        for i in usrViewers:
+            tema(Name=i,Viewers=[ID]).add(remove=True)
+    return temes-usrViewers
 def getUserTemes(ID):
     Author=cursor.execute("""
     SELECT tema FROM reg WHERE auth = ?
@@ -65,7 +73,11 @@ def getUserFavs(ID):
     SELECT tema FROM reg WHERE foll = ?
     """,(ID,)).fetchall()
     return [follower]
-
+def getUserView(ID):
+    Viewers=cursor.execute("""
+    SELECT tema FROM reg WHERE viewer = ?
+    """,(ID,)).fetchall()
+    return Viewers
 def DEBUG(Name:str):
     tema=cursor.execute("""
     SELECT tema,prfl,auth,foll,dis,dec,viewer FROM main WHERE tema = ? 
