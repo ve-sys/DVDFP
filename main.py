@@ -299,9 +299,9 @@ async def cmd_start(message: Message):
     id = int(uid(message.from_user))
     us = (Commands.getuser(id)).name
     pr = (Commands.getuser(id)).prfl
-    GT = Commands.gettemes(id)
+    GT = list(Commands.gettemes(id))
     if len(GT) > 0:
-        tem = choice(GT)[0]
+        tem = choice(GT)
         descr = ((str((Commands.gettema(tem)).Description)).replace("[", "").replace("]", "").replace("'", ""))
         if (Commands.gettema(tem)).Author != []:
             us = (int((str((Commands.gettema(tem)).Author)).replace("[", "").replace("]", "").replace("'", "")))
