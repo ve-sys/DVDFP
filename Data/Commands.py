@@ -60,7 +60,7 @@ def gettemes(ID:int):
     return temes-usrViewers
 def getUserTemes(ID):
     Author=cursor.execute("""
-    SELECT tema FROM reg WHERE auth = ?
+    SELECT tema FROM reg WHERE auth = ? ORDER BY ID DESC
     """,(ID,)).fetchall()
     return [Author]
 def getUserDec(ID):
