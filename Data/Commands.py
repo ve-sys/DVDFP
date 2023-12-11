@@ -1,89 +1,545 @@
-import sqlite3
-import numpy as np
-import Data.date as dd
-databasename=dd.databasename
-from Data.Users import User
-from Data.Tema import tema
-with sqlite3.connect(databasename) as db:
-    cursor= db.cursor()
-    cursor.execute("CREATE TABLE IF NOT EXISTS main(tema TEXT,prfl TINYINT,auth INTEGER,foll INTEGER,viewer INTEGER,dec INTEGER, dis INTEGER)")
-    cursor.execute("CREATE TABLE IF NOT EXISTS reg(ID INTEGER PRIMARY KEY,tema TEXT,auth BIGINT,foll BIGINT,dec BIGINT,dis TEXT,viewer BIGINT)")
-    cursor.execute("CREATE TABLE IF NOT EXISTS user(uid BIGINT,prfl TINYINT,status BOOL,name TEXT,mess CHAR,cash TINYINT,year TINYINT)")
-def getuser(ID:int):
-    db = sqlite3.connect(databasename)
-    cursor = db.cursor()
-    reg = cursor.execute(f"SELECT uid,prfl,status,name,mess,cash FROM user WHERE uid = ?", (ID,)).fetchone()
-    Usr=User(reg[0],reg[1],reg[3],bool(reg[2]),reg[4],reg[5])
-    return Usr
-def gettema(Name:str):
-    db = sqlite3.connect(databasename)
-    cursor = db.cursor()
-    Out=tema(Name)
-    Out.prfl=cursor.execute(f"SELECT prfl FROM main WHERE tema = ?", (Name,)).fetchone()[0]
-    ratio = np.array(cursor.execute("SELECT auth,foll,dec,dis,viewer FROM reg WHERE tema = ?", (Name,)).fetchall()).transpose()
-    if len(ratio)>0:
-        Out.Author= list(filter(lambda x :(x!=None), ratio[0]))
-        Out.follower= list(filter(lambda x :(x!=None), ratio[1]))
-        Out.Decisive= list(filter(lambda x: (x != None), ratio[2]))
-        Out.Description= list(filter(lambda x: (x != None), ratio[3]))
-        Out.Viewers= list(filter(lambda x: (x != None), ratio[4]))
+#ГОВНОКОД
+#КОМЕНТАРИИ БЕСПОЛЕЗНЫ
+#С ЛЮБОВЬЮ - ВОРОН
+
+from Data import Tema,Users,Commands
+import asyncio
+from aiogram import Bot, Dispatcher, F
+from aiogram.filters import Command
+from aiogram.types import Message,KeyboardButton, ReplyKeyboardMarkup
+from aiogram.types import*
+from aiogram.utils.keyboard import ReplyKeyboardBuilder
+from aiogram.utils.keyboard import InlineKeyboardBuilder
+from random import *
+from datetime import *
+from config import token
+print(f'Бот запущен|{token}|{datetime.now().time()}')
+bot = Bot(token)
+dp = Dispatcher()
+
+#получение ID юзера
+def uid(auth):
+    id = ''
+    for i in str(auth):
+        id = id + i
+        if i == ' ':
+            break
+    cid = id.replace("id=", '')
+    return cid
+
+#получение юзернейма
+def uun(auth):
+    un = ''
+    sp = 0
+    for i in str(auth):
+        if i ==' ':
+            sp+=1
+        elif sp == 4 and i!=' ':
+            un = un + i
+        elif sp == 5:
+            break
+    cun = un.replace("username=",'')
+    cun = cun.replace("'",'')
+    return cun
+
+
+#Стартовое сообщение
+@dp.message(Command("start"))
+async def cmd_special_buttons(message: Message):
+    User = Users.User(int(uid(message.from_user)), 0, str(uun(message.from_user)), False, "tg", 0)
+    User.add(Show=True)
+    builder = ReplyKeyboardBuilder()
+    builder.row(
+        KeyboardButton(text="Биохим"),
+    )
+    builder.row(
+        KeyboardButton(text="Физмат"),
+    )
+    builder.row(
+        KeyboardButton(text="Соцэконом"),
+    )
+    builder2 = InlineKeyboardBuilder()
+    builder2.add(InlineKeyboardButton(
+        text="О создателях",
+        callback_data="cre"))
+    await message.answer('Здравствуйте, чат-бот сейчас еще может содержать ошибки\nЕсли вы столкнулись с ошибкой, напишите о ней на почту\ndumai_vanya_dumai@mail.ru\nСпасибо за понимание\n~Команда "Думай, Ваня, Думай"',reply_markup=builder2.as_markup())
+    await message.answer('Это бот, созданный командой \n"Думай, Ваня, думай"\nВыберите ваш учебный профиль', reply_markup=builder.as_markup(resize_keyboard=True))
+    print(f'user:{uun(message.from_user)}|{datetime.now().time()}|инициация бота')
+@dp.callback_query(F.data == "cre")
+async def send_random_value(callback: CallbackQuery):
+    mess ='''Кто это сделал и почему "Ежупа"?
+
+Этот бот создан командой "Думай, Ваня, думай" в процессе прохождения "Школы IT решений" (ШИР) от Brainz by CROC. 
+"Ежупа" - это CROC-овский локальный прикол. Если будете часом у них на "ШИР"е - спросите.
+А краб на аватарке - уже наш прикол и отсылка к тестовой теме 
+
+Что такое Brainz by CROC? https://brainz.croc.ru
+
+Наша команда:
+Иван Торопов - Капитан команды, дополнительный программист
+Иван Воронцов - UI программист
+Антон Акопов - Админ базы данных, backend программист
+Самира Ахметбаева - Аналитик, дизайнер, документатор
+(А так же команда прекрасных анонимных модеров)
+И при активном участии менеджеров и эксперта команды.
+
+<3
+'''
+
+    await callback.message.answer(mess)
+
+@dp.message((F.text.lower() == "назад"))
+async def cmd_special_buttons(message: Message):
+    User = Users.User(int(uid(message.from_user)), 0, str(uun(message.from_user)), False, "tg", 0)
+    User.add(Show=True)
+    builder = ReplyKeyboardBuilder()
+    builder.row(
+        KeyboardButton(text="Биохим"),
+    )
+    builder.row(
+        KeyboardButton(text="Физмат"),
+    )
+    builder.row(
+        KeyboardButton(text="Соцэконом"),
+    )
+    await message.answer('Выберите ваш учебный профиль', reply_markup=builder.as_markup(resize_keyboard=True))
+    print(f'user:{uun(message.from_user)}|{datetime.now().time()}|перевыбор профиля')
+
+#Выбор профиля
+@dp.message((F.text.lower()=="физмат"))
+async def cmd_start(message: Message):
+    id = int(uid(message.from_user))
+    us = (Commands.getuser(id)).name
+    Users.User(id, prfl=1,name=us).add()
+    builder =ReplyKeyboardBuilder()
+    builder.row(
+        KeyboardButton(text="Ищу"),
+    )
+    builder.row(
+        KeyboardButton(text="Задаю"),
+    )
+    builder.row(
+        KeyboardButton(text="Назад"),
+        KeyboardButton(text="Справка"),
+    )
+    await message.answer('Вы - физмат\nВыберете, задаете вы тему или ищите',reply_markup=builder.as_markup(resize_keyboard=True))
+    print(f'user:{us}|{datetime.now().time()}|пользователь выбрал профиль "физмат"')
+@dp.message((F.text.lower() == "биохим"))
+async def cmd_special_buttons(message: Message):
+    id = int(uid(message.from_user))
+    us = (Commands.getuser(id)).name
+    Users.User(id, prfl=2,name=us).add()
+    builder = ReplyKeyboardBuilder()
+    builder.row(
+        KeyboardButton(text="Ищу"),
+    )
+    builder.row(
+        KeyboardButton(text="Задаю"),
+    )
+    builder.row(
+        KeyboardButton(text="Назад"),
+        KeyboardButton(text="Справка"),
+    )
+    await message.answer('Вы - биохим\nВыберете, задаете вы тему или ищите',reply_markup=builder.as_markup(resize_keyboard=True))
+    print(f'user:{us}|{datetime.now().time()}|пользователь выбрал профиль "биохим"')
+@dp.message((F.text.lower() == "соцэконом"))
+async def cmd_special_buttons(message: Message):
+    id = int(uid(message.from_user))
+    us = (Commands.getuser(id)).name
+    Users.User(id, prfl=3,name=us).add()
+    builder = ReplyKeyboardBuilder()
+    builder.row(
+        KeyboardButton(text="Ищу"),
+    )
+    builder.row(
+        KeyboardButton(text="Задаю"),
+    )
+    builder.row(
+        KeyboardButton(text="Назад"),
+        KeyboardButton(text="Справка"),
+    )
+    await message.answer('Вы - соцэконом\nВыберете, задаете вы тему или ищите',reply_markup=builder.as_markup(resize_keyboard=True))
+    print(f'user:{us}|{datetime.now().time()}|пользователь выбрал профиль "соцэконом"')
+
+
+
+#Задаете/Ищите
+@dp.message((F.text.lower() == "задаю"))
+async def without_puree(message: Message):
+    await message.reply('Сейчас добавление тем доступно только проверенным пользователям. \nНапишите пароль, выданный нашей командой,  для авторизации ')
+    id = int(uid(message.from_user))
+    pr = (Commands.getuser(id)).prfl
+    us = (Commands.getuser(id)).name
+    Users.User(id, prfl=pr, name=us, cash=6).add(Show=True)
+    print(f'user:{us}|{datetime.now().time()}|пользователь выбрал роль задающего')
+
+@dp.message((F.text.lower() == "ищу"))
+async def cmd_special_buttons(message: Message):
+    id = int(uid(message.from_user))
+    us = (Commands.getuser(id)).name
+    builder = ReplyKeyboardBuilder()
+    builder.row(
+        KeyboardButton(text="Тeмa"),
+    )
+    builder.row(
+        KeyboardButton(text="Удалить из избранного"),
+        KeyboardButton(text="Больше не решаю")
+    )
+    builder.row(
+        KeyboardButton(text="Мои темы"),
+        KeyboardButton(text="Информация по теме")
+    )
+    builder.row(
+        KeyboardButton(text="Назад"),
+    )
+    builder.row(
+        KeyboardButton(text="Справка"),
+    )
+    await message.answer(
+        "Выберите действие:",
+        reply_markup=builder.as_markup(resize_keyboard=True),
+    )
+    print(f'user:{us}|{datetime.now().time()}|пользователь выбрал роль ищущего')
+
+
+
+#Справка
+@dp.message(F.text.lower() == "справка")
+async def with_puree(message: Message):
+    id = int(uid(message.from_user))
+    us = (Commands.getuser(id)).name
+    mess1 = '''Приветствую. Вы вызвали справку по работе бота!
+
+Для тех, кто ищет тему:
+- мои темы - команда выдает список написанных вами тем, тем, добавленных в избранное и тем, которые вы решаете;
+- удалить - команда удаляет тему из избранного; 
+- информация по теме- команда позволяет узнать точные данные о теме;
+Для тех, кто предлагает тему:
+- предложить - команда позволяет записать тему в базу тем;
+- удалить - команда удаляет ваше авторство из темы;
+- мои темы - команда выдает список написанных вами тем  тем, добавленных в избранное и тем, которые вы решаете;
+- информация по теме - команда позволяет узнать точные данные о теме;
+
+dumai_vanya_dumai@mail.ru - почта для обратной связи'''
+    await message.reply("Справка по работе бота:\n"+mess1)
+    print(f'user:{us}|{datetime.now().time()}|пользователь вызвал справку')
+
+#Добавление/удаление
+@dp.message(F.text.lower() == "записать")
+async def without_puree(message: Message):
+    await message.reply('Пришлите тему отдельным сообщением\n\n!!Тема будет записана не анонимно, пользователи будут видеть ваш контакт, как контакт автора темы!! ')
+    id = int(uid(message.from_user))
+    pr = (Commands.getuser(id)).prfl
+    us = (Commands.getuser(id)).name
+    Users.User(id, prfl=pr,name=us,cash=1).add(Show=True)
+    print(f'user:{us}|{datetime.now().time()}|пользователь запустил команду добавления темы')
+@dp.message(F.text.lower() == "удалить")
+async def without_puree(message: Message):
+    await message.reply("Напишите название темы, которую надо удалить")
+    id = int(uid(message.from_user))
+    pr = (Commands.getuser(id)).prfl
+    us = (Commands.getuser(id)).name
+    Users.User(id, prfl=pr,name=us,cash=2).add(Show=True)
+    print(f'user:{us}|{datetime.now().time()}|пользователь запустил команду удаления темы')
+@dp.message(F.text.lower() == "удалить из избранного")
+async def without_puree(message: Message):
+    await message.reply("Напишите название темы, которую надо удалить из избранного")
+    id = int(uid(message.from_user))
+    pr = (Commands.getuser(id)).prfl
+    us = (Commands.getuser(id)).name
+    Users.User(id, prfl=pr,name=us,cash=4).add(Show=True)
+    print(f'user:{us}|{datetime.now().time()}|пользователь запустил команду удаления темы из избранного')
+@dp.message(F.text.lower() == "информация по теме")
+async def without_puree(message: Message):
+    await message.reply("Напишите название темы, информацию о которой хотите узнать")
+    id = int(uid(message.from_user))
+    pr = (Commands.getuser(id)).prfl
+    us = (Commands.getuser(id)).name
+    Users.User(id, prfl=pr, name=us, cash=3).add(Show=True)
+    print(f'user:{us}|{datetime.now().time()}|пользователь запустил команду получения информации о теме')
+@dp.message(F.text.lower() == "больше не решаю")
+async def without_puree(message: Message):
+    await message.reply("Напишите название темы, которую вы больше не решаете")
+    id = int(uid(message.from_user))
+    pr = (Commands.getuser(id)).prfl
+    us = (Commands.getuser(id)).name
+    Users.User(id, prfl=pr, name=us, cash=5).add(Show=True)
+    print(f'user:{us}|{datetime.now().time()}|пользователь запустил команду удаления из решающих')
+
+@dp.message(F.text.lower() == "мои темы")
+async def without_puree(message: Message):
+    id = int(uid(message.from_user))
+    pr = (Commands.getuser(id)).prfl
+    us = (Commands.getuser(id)).name
+    mess = 'Список ваших тем\nДобавленное вами:'
+    F = Commands.getUserTemes(id)[0][:-1]
+    if len(F) > 0:
+        for x in F:
+            mess = mess + f"\n- {x[0]}"
     else:
-        Out.Author=Out.follower=Out.Decisive=Out.Description=Out.Viewers=[]
-    return Out
-def gettemes(ID:int):
-    user=getuser(ID)
-    usrViewers= {x[0] for x in getUserView(ID)}
-    if len(usrViewers)>0:
-        SuV=str(usrViewers).replace("{","(").replace("}",")")
-        View = cursor.execute(f"""
-            SELECT MIN(viewer) FROM main WHERE prfl = ? AND NOT (tema IN {SuV})
-            """, (user.prfl,)).fetchone()[0]
-        print("View", SuV)
+        mess += "\n-"
+    mess += '\nВ избранном:'
+    F = Commands.getUserFavs(id)[0][:-1]
+    if len(F) > 0:
+        for x in F:
+            mess = mess + f"\n- {x[0]}"
     else:
-        View = cursor.execute("""SELECT MIN(viewer) FROM main WHERE prfl = ?""", (user.prfl,)).fetchone()[0]
-    Auth=cursor.execute("""
-    SELECT MAX(auth) FROM main WHERE 
-    prfl = ?  AND viewer = ?
-    """, (user.prfl,View)).fetchone()[0]
-    Dec=cursor.execute("""
-    SELECT MIN(dec) FROM main WHERE 
-    prfl = ?  AND viewer = ? AND auth = ?
-    """, (user.prfl,View,Auth)).fetchone()[0]
-    temes={x[0] for x in cursor.execute("""
-    SELECT tema,prfl FROM main WHERE
-    prfl = ?  AND viewer = ? AND auth = ? AND dec = ?
-    """, (user.prfl,View,Auth,Dec)).fetchall()}
-    print("NView",temes,DEBUG("tw"))
-    if len(temes-usrViewers)==0:
-        for i in usrViewers:
-            tema(Name=i,Viewers=[ID]).add(remove=True)
-    return temes-usrViewers
-def getUserTemes(ID):
-    Author=cursor.execute("""
-    SELECT tema FROM reg WHERE auth = ? ORDER BY ID DESC
-    """,(ID,)).fetchall()
-    return [Author]
-def getUserDec(ID):
-    dec=cursor.execute("""
-    SELECT tema FROM reg WHERE dec = ?
-    """,(ID,)).fetchall()
-    return [dec]
-def getUserFavs(ID):
-    follower=cursor.execute("""
-    SELECT tema FROM reg WHERE foll = ?
-    """,(ID,)).fetchall()
-    return [follower]
-def getUserView(ID):
-    Viewers=cursor.execute("""
-    SELECT tema FROM reg WHERE viewer = ?
-    """,(ID,)).fetchall()
-    return Viewers
-def DEBUG(Name:str):
-    tema=cursor.execute("""
-    SELECT tema,prfl,auth,foll,dis,dec,viewer FROM main WHERE tema = ? 
-    """,(Name,)).fetchone()
-    return tema
+        mess += "\n-"
+    mess += '\nЯ решаю:'
+    F = Commands.getUserDec(id)[0][:-1]
+    if len(F) > 0:
+        for x in F:
+            mess = mess + f"\n- {x[0]}"
+    else:
+        mess += "\n-"
+    await message.reply(mess)
+    print(f'user:{us}|{datetime.now().time()}|пользователь запросил "мои темы"')
+
+@dp.message((F.text.lower() == "тeмa"))
+async def cmd_start(message: Message):
+    id = int(uid(message.from_user))
+    us = (Commands.getuser(id)).name
+    pr = (Commands.getuser(id)).prfl
+    GT = list(Commands.gettemes(id))
+    if len(GT) > 0:
+        tem = choice(GT)
+        descr = ((str((Commands.gettema(tem)).Description)).replace("[", "").replace("]", "").replace("'", ""))
+        if (Commands.gettema(tem)).Author != []:
+            us = (int((str((Commands.gettema(tem)).Author)).replace("[", "").replace("]", "").replace("'", "")))
+            us = "@" + Commands.getuser(us).name
+        else:
+            us = ""
+        print(f'user:{us}|{datetime.now().time()}|тема<{tem}>|описание<{descr}>|пользователь запросил тему из базы')
+        builder = InlineKeyboardBuilder()
+        builder.add(InlineKeyboardButton(
+            text="Избранное",
+            callback_data="fav"))
+        builder.add(InlineKeyboardButton(
+            text="Буду решать",
+            callback_data="dec"))
+        await message.answer(
+            f'"{tem}" Автор - {us}\n Описание: {descr}',
+            reply_markup=builder.as_markup()
+        )
+        (Tema.tema(tem,Viewers=[id])).add()
+    else:
+        print(f'user:{us}|{datetime.now().time()}|пользователь запросил тему из базы')
+        print(f'user:{us}|{datetime.now().time()}|профиль:{pr}|новых тем нет')
+        await message.answer("Новых тем нет, приходите позже")
+@dp.callback_query(F.data == "fav")
+async def send_random_value(callback: CallbackQuery):
+    user = callback.from_user.id
+    mess = callback.message.text
+    us = (Commands.getuser(user)).name
+    tem = ''
+    flg = 0
+    for i in mess:
+        if i =='"':
+            flg+=1
+        if flg<=2:
+            tem+=i
+        if flg >=2:
+            break
+    tem = tem.replace('"','')
+    Tema.tema(tem, follower=[user]).add()
+    rtem = (Commands.gettema(tem))
+    print(f'user:{us}|{datetime.now().time()}|тема:<{rtem}>|пользователь добавил тему в избранное')
+    await callback.answer(
+        text="Тема сохранена",
+        show_alert=True)
+@dp.callback_query(F.data == "dec")
+async def send_random_value(callback: CallbackQuery):
+    user = callback.from_user.id
+    mess = callback.message.text
+    us = (Commands.getuser(user)).name
+    tem = ''
+    flg = 0
+    for i in mess:
+        if i =='"':
+            flg+=1
+        if flg<=2:
+            tem+=i
+        if flg >=2:
+            break
+    tem = tem.replace('"','')
+    Tema.tema(tem, Decisive=[user]).add()
+    rtem = (Commands.gettema(tem))
+    print(f'user:{us}|{datetime.now().time()}|тема:<{rtem}>|пользователь стал решать тему')
+    await callback.answer(
+        text="Вы записаны в список тех, кто работает над темой",
+        show_alert=True
+    )
+
+@dp.message()
+async def echo(message: Message):
+    id = int(uid(message.from_user))
+    status = (Commands.getuser(id)).cash
+    pr = (Commands.getuser(id)).prfl
+    us = (Commands.getuser(id)).name
+    if status == 1:
+        temm = ''
+        descr = ''
+        flg = 0
+        for i in message.text:
+            if i == ';':
+                flg = 1
+            if flg == 0:
+                temm = temm+i
+            if flg ==1:
+                descr = descr+i
+        temm = temm.replace('"','')
+        (Tema.tema(temm,prfl=pr,Description=[],Author=[id])).add(show=True)#<<<<
+        await message.answer('Пришлите описание отдельным сообщением')
+        id = int(uid(message.from_user))
+        pr = (Commands.getuser(id)).prfl
+        us = (Commands.getuser(id)).name
+        Users.User(id, prfl=pr, name=us, cash=12).add(Show=True)
+        print(str((Commands.getuser(id))))
+        print(Commands.getuser(id).name)
+        print(f'user:{us}|{datetime.now().time()}|тема:<{message.text}>|пользователь записал тему|профиль<{pr}>')
+    if status == 12:
+        them = str(Commands.getUserTemesZAP(id)[0][0])
+        them = them[1:-2]
+        them = them.replace("'",'')
+        Tema.tema(them, Description=[message.text]).add(show=True)
+        Users.User(id, prfl=pr, name=us, cash=0).add(Show=True)
+        await message.answer('Готово!')
+    if status == 2:
+        try:
+            Thema = Tema.tema(message.text, Description=[""], Author=[id])
+            if Thema.exist():
+                Thema.add(show=True, remove=True)
+                id = int(uid(message.from_user))
+                pr = (Commands.getuser(id)).prfl
+                us = (Commands.getuser(id)).name
+                Users.User(id, prfl=pr, name=us, cash=0).add(Show=True)
+                await message.answer('Тема удалена!')
+                print(f'user:{us}|{datetime.now().time()}|тема:<{message.text}>|пользователь удалил тему')
+            else:
+                print(f'user:{us}|{datetime.now().time()}|тема:<{message.text}>|пользователь ввел неверную тему')
+                await message.answer(
+                    'Такой темы нет, \nпроверьте правильность написания темы\n(Проверьте, что тема написана без кавычек, знаков препинаний и лишних пробелов) ')
+        except:
+            print(f'user:{us}|{datetime.now().time()}|тема:<{message.text}>|пользователь ввел неверную тему')
+            await message.answer('Такой темы нет, \nпроверьте правильность написания темы\n(Проверьте, что тема написана без кавычек, знаков препинаний и лишних пробелов) ')
+    if status == 3:
+        try:
+            id = int(uid(message.from_user))
+            pr = (Commands.getuser(id)).prfl
+            us = (Commands.getuser(id)).name
+            if len((Commands.gettema(message.text)).Author)>0:
+                us2 = "@"+(Commands.getuser((Commands.gettema(message.text)).Author[0])).name
+            else:
+                us2="--"
+            print(Commands.gettema(message.text))
+            Users.User(id, prfl=pr, name=us, cash=0).add(Show=True)
+            prf = int((Commands.gettema(message.text)).prfl)
+            if prf == 1:
+                p = 'Физмат'
+            if prf == 2:
+                p = 'Биохим'
+            if prf == 3:
+                p = 'Соцэконом'
+            mess = f'Автор: {us2} \nПрофиль: {p} \n'
+            mess += f'Описание: {str((Commands.gettema(message.text)).Description).replace("[","").replace("]","")} \n'
+            if us == us2:
+                mess += f'Подписчики: {len(list((Commands.gettema(message.text)).follower))} \n'
+                mess += f'Просмотры: {len(list((Commands.gettema(message.text)).Viewers))} \n'
+            iddqd = ''
+            for i in (list((Commands.gettema(message.text)).Decisive)):
+                i = int(str(i).replace('[','').replace("'","").replace(']',''))
+                iddqd = iddqd+str(i)+' '
+            if us == us2 or str(id) in iddqd:
+                mess += f'Решающие: \n'
+                for i in (list((Commands.gettema(message.text)).Decisive)):
+                    i = int(str(i).replace('[','').replace("'","").replace(']',''))
+                    mess += f'@{(Commands.getuser(i).name)}\n'
+            await message.answer(mess)
+            print(f'user:{us}|{datetime.now().time()}|тема:<{message.text}>|пользователь вызвал информацию по теме')
+        except:
+            print(f'user:{us}|{datetime.now().time()}|тема:<{message.text}>|пользователь ввел неверную тему (инфо)')
+            await message.answer('Такой темы нет, \nпроверьте правильность написания темы\n(Проверьте, что тема написана без кавычек, знаков препинаний и лишних пробелов) ')
+    if status == 4:
+        try:
+            Thema = Tema.tema(message.text, Description=[""], follower=[id])
+            if Thema.exist():
+                Thema.add(show=True, remove=True)
+                id = int(uid(message.from_user))
+                pr = (Commands.getuser(id)).prfl
+                us = (Commands.getuser(id)).name
+                Users.User(id, prfl=pr, name=us, cash=0).add(Show=True)
+                await message.answer('Тема удалена!')
+                print(f'user:{us}|{datetime.now().time()}|тема:<{message.text}>|пользователь удалил тему из избранного')
+            else:
+                print(f'user:{us}|{datetime.now().time()}|тема:<{message.text}>|пользователь ввел неверную тему (удал. избр)')
+                await message.answer(
+                    'Такой темы нет, \nпроверьте правильность написания темы\n(Проверьте, что тема написана без кавычек, знаков препинаний и лишних пробелов) ')
+        except:
+            print(f'user:{us}|{datetime.now().time()}|тема:<{message.text}>|пользователь ввел неверную тему (удал. избр)')
+            await message.answer(
+                'Такой темы нет, \nпроверьте правильность написания темы\n(Проверьте, что тема написана без кавычек, знаков препинаний и лишних пробелов) ')
+    if status == 5:
+        try:
+            Thema = Tema.tema(message.text, Description=[""], Decisive=[id])
+            if Thema.exist():
+                Thema.add(show=True, remove=True)
+                id = int(uid(message.from_user))
+                pr = (Commands.getuser(id)).prfl
+                us = (Commands.getuser(id)).name
+                Users.User(id, prfl=pr, name=us, cash=0).add(Show=True)
+                await message.answer('Тема удалена!')
+                print(f'user:{us}|{datetime.now().time()}|тема:<{message.text}>|пользователь удалил тему из решающих')
+            else:
+                print(f'user:{us}|{datetime.now().time()}|тема:<{message.text}>|пользователь ввел неверную тему (удал. реш)')
+                await message.answer(
+                    'Такой темы нет, \nпроверьте правильность написания темы\n(Проверьте, что тема написана без кавычек, знаков препинаний и лишних пробелов) ')
+        except:
+            print(f'user:{us}|{datetime.now().time()}|тема:<{message.text}>|пользователь ввел неверную тему (удал. реш)')
+            await message.answer(
+                'Такой темы нет, \nпроверьте правильность написания темы\n(Проверьте, что тема написана без кавычек, знаков препинаний и лишних пробелов) ')
+    if status == 6:
+        id = int(uid(message.from_user))
+        pr = (Commands.getuser(id)).prfl
+        us = (Commands.getuser(id)).name
+        print(f'user:{us}|{datetime.now().time()}|ввод пароля')
+        if message.text == 'CrCEJP_18A31ek7d1fsIv748r329HJsfe_TA':
+            builder = ReplyKeyboardBuilder()
+            builder.row(
+                KeyboardButton(text="Записать"),
+            )
+            builder.row(
+                KeyboardButton(text="Удалить"),
+                KeyboardButton(text="Мои темы"),
+                KeyboardButton(text="Информация по теме")
+            )
+            builder.row(
+                KeyboardButton(text="Назад"),
+                KeyboardButton(text="Справка"),
+            )
+            await message.answer(
+                "Выберите действие:",
+                reply_markup=builder.as_markup(resize_keyboard=True),
+            )
+            Users.User(id, prfl=pr, name=us, cash=0).add(Show=True)
+            print(f'user:{us}|{datetime.now().time()}|введен верный пароль')
+        else:
+            await message.answer('Неправильный пароль!')
+            Users.User(id, prfl=pr, name=us, cash=0).add(Show=True)
+            print(f'user:{us}|{datetime.now().time()}|введен неверный пароль')
+    if status == 0:
+        await message.answer('Такой команды нет, проверьте правильность написания')
 
 
+#
+#
+#
+#
+#
+#
 
-
+#не трогай, это техническое
+async def main():
+    await bot.delete_webhook(drop_pending_updates=True)
+    await dp.start_polling(bot)
+if __name__ == "__main__":
+    asyncio.run(main())
