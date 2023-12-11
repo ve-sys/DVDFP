@@ -11,8 +11,9 @@ from aiogram.types import*
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from random import *
+from datetime import *
 from config import token
-print(f'Бот запущен|{token}')
+print(f'Бот запущен|{token}|{datetime.now().time()}')
 bot = Bot(token)
 dp = Dispatcher()
 
@@ -63,7 +64,7 @@ async def cmd_special_buttons(message: Message):
         callback_data="cre"))
     await message.answer('Здравствуйте, чат-бот сейчас еще может содержать ошибки\nЕсли вы столкнулись с ошибкой, напишите о ней на почту\ndumai_vanya_dumai@mail.ru\nСпасибо за понимание\n~Команда "Думай, Ваня, Думай"',reply_markup=builder2.as_markup())
     await message.answer('Это бот, созданный командой \n"Думай, Ваня, думай"\nВыберите ваш учебный профиль', reply_markup=builder.as_markup(resize_keyboard=True))
-    print(f'user:{uun(message.from_user)}|инициация бота')
+    print(f'user:{uun(message.from_user)}|{datetime.now().time()}|инициация бота')
 @dp.callback_query(F.data == "cre")
 async def send_random_value(callback: CallbackQuery):
     mess ='''Кто это сделал и почему "Ежупа"?
@@ -102,7 +103,7 @@ async def cmd_special_buttons(message: Message):
         KeyboardButton(text="Соцэконом"),
     )
     await message.answer('Выберите ваш учебный профиль', reply_markup=builder.as_markup(resize_keyboard=True))
-    print(f'user:{uun(message.from_user)}|перевыбор профиля')
+    print(f'user:{uun(message.from_user)}|{datetime.now().time()}|перевыбор профиля')
 
 #Выбор профиля
 @dp.message((F.text.lower()=="физмат"))
@@ -122,7 +123,7 @@ async def cmd_start(message: Message):
         KeyboardButton(text="Справка"),
     )
     await message.answer('Вы - физмат\nВыберете, задаете вы тему или ищите',reply_markup=builder.as_markup(resize_keyboard=True))
-    print(f'user:{us}|пользователь выбрал профиль "физмат"')
+    print(f'user:{us}|{datetime.now().time()}|пользователь выбрал профиль "физмат"')
 @dp.message((F.text.lower() == "биохим"))
 async def cmd_special_buttons(message: Message):
     id = int(uid(message.from_user))
@@ -140,7 +141,7 @@ async def cmd_special_buttons(message: Message):
         KeyboardButton(text="Справка"),
     )
     await message.answer('Вы - биохим\nВыберете, задаете вы тему или ищите',reply_markup=builder.as_markup(resize_keyboard=True))
-    print(f'user:{us}|пользователь выбрал профиль "биохим"')
+    print(f'user:{us}|{datetime.now().time()}|пользователь выбрал профиль "биохим"')
 @dp.message((F.text.lower() == "соцэконом"))
 async def cmd_special_buttons(message: Message):
     id = int(uid(message.from_user))
@@ -158,7 +159,7 @@ async def cmd_special_buttons(message: Message):
         KeyboardButton(text="Справка"),
     )
     await message.answer('Вы - соцэконом\nВыберете, задаете вы тему или ищите',reply_markup=builder.as_markup(resize_keyboard=True))
-    print(f'user:{us}|пользователь выбрал профиль "соцэконом"')
+    print(f'user:{us}|{datetime.now().time()}|пользователь выбрал профиль "соцэконом"')
 
 
 
@@ -170,7 +171,7 @@ async def without_puree(message: Message):
     pr = (Commands.getuser(id)).prfl
     us = (Commands.getuser(id)).name
     Users.User(id, prfl=pr, name=us, cash=6).add(Show=True)
-    print(f'user:{us}|пользователь выбрал роль задающего')
+    print(f'user:{us}|{datetime.now().time()}|пользователь выбрал роль задающего')
 
 @dp.message((F.text.lower() == "ищу"))
 async def cmd_special_buttons(message: Message):
@@ -198,7 +199,7 @@ async def cmd_special_buttons(message: Message):
         "Выберите действие:",
         reply_markup=builder.as_markup(resize_keyboard=True),
     )
-    print(f'user:{us}|пользователь выбрал роль ищущего')
+    print(f'user:{us}|{datetime.now().time()}|пользователь выбрал роль ищущего')
 
 
 
@@ -221,17 +222,17 @@ async def with_puree(message: Message):
 
 dumai_vanya_dumai@mail.ru - почта для обратной связи'''
     await message.reply("Справка по работе бота:\n"+mess1)
-    print(f'user:{us}|пользователь вызвал справку')
+    print(f'user:{us}|{datetime.now().time()}|пользователь вызвал справку')
 
 #Добавление/удаление
 @dp.message(F.text.lower() == "записать")
 async def without_puree(message: Message):
-    await message.reply('Пришлите тему отдельным сообщением в формате \n"Тема; Описание темы"\n\n!!Тема будет записана не анонимно, пользователи будут видеть ваш контакт, как контакт автора темы!! ')
+    await message.reply('Пришлите тему отдельным сообщением\n\n!!Тема будет записана не анонимно, пользователи будут видеть ваш контакт, как контакт автора темы!! ')
     id = int(uid(message.from_user))
     pr = (Commands.getuser(id)).prfl
     us = (Commands.getuser(id)).name
     Users.User(id, prfl=pr,name=us,cash=1).add(Show=True)
-    print(f'user:{us}|пользователь запустил команду добавления темы')
+    print(f'user:{us}|{datetime.now().time()}|пользователь запустил команду добавления темы')
 @dp.message(F.text.lower() == "удалить")
 async def without_puree(message: Message):
     await message.reply("Напишите название темы, которую надо удалить")
@@ -239,7 +240,7 @@ async def without_puree(message: Message):
     pr = (Commands.getuser(id)).prfl
     us = (Commands.getuser(id)).name
     Users.User(id, prfl=pr,name=us,cash=2).add(Show=True)
-    print(f'user:{us}|пользователь запустил команду удаления темы')
+    print(f'user:{us}|{datetime.now().time()}|пользователь запустил команду удаления темы')
 @dp.message(F.text.lower() == "удалить из избранного")
 async def without_puree(message: Message):
     await message.reply("Напишите название темы, которую надо удалить из избранного")
@@ -247,7 +248,7 @@ async def without_puree(message: Message):
     pr = (Commands.getuser(id)).prfl
     us = (Commands.getuser(id)).name
     Users.User(id, prfl=pr,name=us,cash=4).add(Show=True)
-    print(f'user:{us}|пользователь запустил команду удаления темы из избранного')
+    print(f'user:{us}|{datetime.now().time()}|пользователь запустил команду удаления темы из избранного')
 @dp.message(F.text.lower() == "информация по теме")
 async def without_puree(message: Message):
     await message.reply("Напишите название темы, информацию о которой хотите узнать")
@@ -255,7 +256,7 @@ async def without_puree(message: Message):
     pr = (Commands.getuser(id)).prfl
     us = (Commands.getuser(id)).name
     Users.User(id, prfl=pr, name=us, cash=3).add(Show=True)
-    print(f'user:{us}|пользователь запустил команду получения информации о теме')
+    print(f'user:{us}|{datetime.now().time()}|пользователь запустил команду получения информации о теме')
 @dp.message(F.text.lower() == "больше не решаю")
 async def without_puree(message: Message):
     await message.reply("Напишите название темы, которую вы больше не решаете")
@@ -263,7 +264,7 @@ async def without_puree(message: Message):
     pr = (Commands.getuser(id)).prfl
     us = (Commands.getuser(id)).name
     Users.User(id, prfl=pr, name=us, cash=5).add(Show=True)
-    print(f'user:{us}|пользователь запустил команду удаления из решающих')
+    print(f'user:{us}|{datetime.now().time()}|пользователь запустил команду удаления из решающих')
 
 @dp.message(F.text.lower() == "мои темы")
 async def without_puree(message: Message):
@@ -292,7 +293,7 @@ async def without_puree(message: Message):
     else:
         mess += "\n-"
     await message.reply(mess)
-    print(f'user:{us}||пользователь запросил "мои темы"')
+    print(f'user:{us}|{datetime.now().time()}|пользователь запросил "мои темы"')
 
 @dp.message((F.text.lower() == "тeмa"))
 async def cmd_start(message: Message):
@@ -308,7 +309,7 @@ async def cmd_start(message: Message):
             us = "@" + Commands.getuser(us).name
         else:
             us = ""
-        print(f'user:{us}|тема<{tem}>|описание<{descr}>|пользователь запросил тему из базы')
+        print(f'user:{us}|{datetime.now().time()}|тема<{tem}>|описание<{descr}>|пользователь запросил тему из базы')
         builder = InlineKeyboardBuilder()
         builder.add(InlineKeyboardButton(
             text="Избранное",
@@ -320,11 +321,10 @@ async def cmd_start(message: Message):
             f'"{tem}" Автор - {us}\n Описание: {descr}',
             reply_markup=builder.as_markup()
         )
-        print(f'"{tem}" Автор - @{us}\n Описание: {descr}')
         (Tema.tema(tem,Viewers=[id])).add()
     else:
-        print(f'user:{us}|пользователь запросил тему из базы')
-        print(f'user:{us}|профиль:{pr}|новых тем нет')
+        print(f'user:{us}|{datetime.now().time()}|пользователь запросил тему из базы')
+        print(f'user:{us}|{datetime.now().time()}|профиль:{pr}|новых тем нет')
         await message.answer("Новых тем нет, приходите позже")
 @dp.callback_query(F.data == "fav")
 async def send_random_value(callback: CallbackQuery):
@@ -343,7 +343,7 @@ async def send_random_value(callback: CallbackQuery):
     tem = tem.replace('"','')
     Tema.tema(tem, follower=[user]).add()
     rtem = (Commands.gettema(tem))
-    print(f'user:{us}|тема:<{rtem}>|пользователь добавил тему в избранное')
+    print(f'user:{us}|{datetime.now().time()}|тема:<{rtem}>|пользователь добавил тему в избранное')
     await callback.answer(
         text="Тема сохранена",
         show_alert=True)
@@ -364,7 +364,7 @@ async def send_random_value(callback: CallbackQuery):
     tem = tem.replace('"','')
     Tema.tema(tem, Decisive=[user]).add()
     rtem = (Commands.gettema(tem))
-    print(f'user:{us}|тема:<{rtem}>|пользователь стал решать тему')
+    print(f'user:{us}|{datetime.now().time()}|тема:<{rtem}>|пользователь стал решать тему')
     await callback.answer(
         text="Вы записаны в список тех, кто работает над темой",
         show_alert=True
@@ -388,15 +388,22 @@ async def echo(message: Message):
             if flg ==1:
                 descr = descr+i
         temm = temm.replace('"','')
-        (Tema.tema(temm,prfl=pr,Description=[descr[1:]],Author=[id])).add(show=True)#<<<<
-        await message.answer('Тема записана!')
+        (Tema.tema(temm,prfl=pr,Description=[],Author=[id])).add(show=True)#<<<<
+        await message.answer('Пришлите описание отдельным сообщением')
         id = int(uid(message.from_user))
         pr = (Commands.getuser(id)).prfl
         us = (Commands.getuser(id)).name
-        Users.User(id, prfl=pr, name=us, cash=0).add(Show=True)
+        Users.User(id, prfl=pr, name=us, cash=12).add(Show=True)
         print(str((Commands.getuser(id))))
         print(Commands.getuser(id).name)
-        print(f'user:{us}|тема:<{message.text}>|пользователь записал тему|профиль<{pr}>')
+        print(f'user:{us}|{datetime.now().time()}|тема:<{message.text}>|пользователь записал тему|профиль<{pr}>')
+    if status == 12:
+        them = str(Commands.getUserTemesZAP(id)[0][0])
+        them = them[1:-2]
+        them = them.replace("'",'')
+        Tema.tema(them, Description=[message.text]).add(show=True)
+        Users.User(id, prfl=pr, name=us, cash=0).add(Show=True)
+        await message.answer('Готово!')
     if status == 2:
         try:
             Thema = Tema.tema(message.text, Description=[""], Author=[id])
@@ -407,13 +414,13 @@ async def echo(message: Message):
                 us = (Commands.getuser(id)).name
                 Users.User(id, prfl=pr, name=us, cash=0).add(Show=True)
                 await message.answer('Тема удалена!')
-                print(f'user:{us}|тема:<{message.text}>|пользователь удалил тему')
+                print(f'user:{us}|{datetime.now().time()}|тема:<{message.text}>|пользователь удалил тему')
             else:
-                print(f'user:{us}|тема:<{message.text}>|пользователь ввел неверную тему')
+                print(f'user:{us}|{datetime.now().time()}|тема:<{message.text}>|пользователь ввел неверную тему')
                 await message.answer(
                     'Такой темы нет, \nпроверьте правильность написания темы\n(Проверьте, что тема написана без кавычек, знаков препинаний и лишних пробелов) ')
         except:
-            print(f'user:{us}|тема:<{message.text}>|пользователь ввел неверную тему')
+            print(f'user:{us}|{datetime.now().time()}|тема:<{message.text}>|пользователь ввел неверную тему')
             await message.answer('Такой темы нет, \nпроверьте правильность написания темы\n(Проверьте, что тема написана без кавычек, знаков препинаний и лишних пробелов) ')
     if status == 3:
         try:
@@ -448,9 +455,9 @@ async def echo(message: Message):
                     i = int(str(i).replace('[','').replace("'","").replace(']',''))
                     mess += f'@{(Commands.getuser(i).name)}\n'
             await message.answer(mess)
-            print(f'user:{us}|тема:<{message.text}>|пользователь вызвал информацию по теме')
+            print(f'user:{us}|{datetime.now().time()}|тема:<{message.text}>|пользователь вызвал информацию по теме')
         except:
-            print(f'user:{us}|тема:<{message.text}>|пользователь ввел неверную тему')
+            print(f'user:{us}|{datetime.now().time()}|тема:<{message.text}>|пользователь ввел неверную тему (инфо)')
             await message.answer('Такой темы нет, \nпроверьте правильность написания темы\n(Проверьте, что тема написана без кавычек, знаков препинаний и лишних пробелов) ')
     if status == 4:
         try:
@@ -462,13 +469,13 @@ async def echo(message: Message):
                 us = (Commands.getuser(id)).name
                 Users.User(id, prfl=pr, name=us, cash=0).add(Show=True)
                 await message.answer('Тема удалена!')
-                print(f'user:{us}|тема:<{message.text}>|пользователь удалил тему из избранного')
+                print(f'user:{us}|{datetime.now().time()}|тема:<{message.text}>|пользователь удалил тему из избранного')
             else:
-                print(f'user:{us}|тема:<{message.text}>|пользователь ввел неверную тему')
+                print(f'user:{us}|{datetime.now().time()}|тема:<{message.text}>|пользователь ввел неверную тему (удал. избр)')
                 await message.answer(
                     'Такой темы нет, \nпроверьте правильность написания темы\n(Проверьте, что тема написана без кавычек, знаков препинаний и лишних пробелов) ')
         except:
-            print(f'user:{us}|тема:<{message.text}>|пользователь ввел неверную тему')
+            print(f'user:{us}|{datetime.now().time()}|тема:<{message.text}>|пользователь ввел неверную тему (удал. избр)')
             await message.answer(
                 'Такой темы нет, \nпроверьте правильность написания темы\n(Проверьте, что тема написана без кавычек, знаков препинаний и лишних пробелов) ')
     if status == 5:
@@ -481,20 +488,20 @@ async def echo(message: Message):
                 us = (Commands.getuser(id)).name
                 Users.User(id, prfl=pr, name=us, cash=0).add(Show=True)
                 await message.answer('Тема удалена!')
-                print(f'user:{us}|тема:<{message.text}>|пользователь удалил тему из решающих')
+                print(f'user:{us}|{datetime.now().time()}|тема:<{message.text}>|пользователь удалил тему из решающих')
             else:
-                print(f'user:{us}|тема:<{message.text}>|пользователь ввел неверную тему')
+                print(f'user:{us}|{datetime.now().time()}|тема:<{message.text}>|пользователь ввел неверную тему (удал. реш)')
                 await message.answer(
                     'Такой темы нет, \nпроверьте правильность написания темы\n(Проверьте, что тема написана без кавычек, знаков препинаний и лишних пробелов) ')
         except:
-            print(f'user:{us}|тема:<{message.text}>|пользователь ввел неверную тему')
+            print(f'user:{us}|{datetime.now().time()}|тема:<{message.text}>|пользователь ввел неверную тему (удал. реш)')
             await message.answer(
                 'Такой темы нет, \nпроверьте правильность написания темы\n(Проверьте, что тема написана без кавычек, знаков препинаний и лишних пробелов) ')
     if status == 6:
         id = int(uid(message.from_user))
         pr = (Commands.getuser(id)).prfl
         us = (Commands.getuser(id)).name
-        print(f'user:{us}|ввод пароля')
+        print(f'user:{us}|{datetime.now().time()}|ввод пароля')
         if message.text == 'CrCEJP_18A31ek7d1fsIv748r329HJsfe_TA':
             builder = ReplyKeyboardBuilder()
             builder.row(
@@ -514,11 +521,11 @@ async def echo(message: Message):
                 reply_markup=builder.as_markup(resize_keyboard=True),
             )
             Users.User(id, prfl=pr, name=us, cash=0).add(Show=True)
-            print(f'user:{us}|введен верный пароль')
+            print(f'user:{us}|{datetime.now().time()}|введен верный пароль')
         else:
             await message.answer('Неправильный пароль!')
             Users.User(id, prfl=pr, name=us, cash=0).add(Show=True)
-            print(f'user:{us}|введен неверный пароль')
+            print(f'user:{us}|{datetime.now().time()}|введен неверный пароль')
     if status == 0:
         await message.answer('Такой команды нет, проверьте правильность написания')
 
