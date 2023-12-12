@@ -83,6 +83,13 @@ def DEBUG(Name:str):
     SELECT tema,prfl,auth,foll,dis,dec,viewer FROM main WHERE tema = ? 
     """,(Name,)).fetchone()
     return tema
+def getUserTemesZAP(ID):
+    Author=cursor.execute("""
+    SELECT tema FROM reg WHERE auth = ? ORDER BY ID DESC
+    """,(ID,)).fetchall()
+    return [Author]
+
+
 
 
 
