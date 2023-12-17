@@ -603,7 +603,7 @@ async def echo(message: Message):
         pr = (Commands.getuser(id)).prfl
         us = (Commands.getuser(id)).name
         print(f'user:{us}|{datetime.now().time()}|ввод пароля')
-        if message.text == 'CrCEJP_18A31ek7d1fsIv748r329HJsfe_TA':
+        if message.text == 'CrCEJP_TA':
             builder = ReplyKeyboardBuilder()
             builder.row(
                 KeyboardButton(text="Записать"),
